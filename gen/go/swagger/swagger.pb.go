@@ -1,4 +1,4 @@
-package ssov1
+package swagger
 
 const SwaggerJSON = `{
   "swagger": "2.0",

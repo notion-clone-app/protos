@@ -1,0 +1,156 @@
+syntax = "proto3";
+
+package marketing;
+
+option go_package = "notion-clone.marketing.v1;marketingv1";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+
+service Marketing {
+  rpc CreateDocument(CreateDocumentRequest) returns (CreateDocumentResponse) {
+    option (google.api.http) = {
+            post: "/v1/marketing/documents"
+            body: "*"
+        };
+  }
+  rpc GetDocument(GetDocumentRequest) returns (GetDocumentResponse) {
+    option (google.api.http) = {
+            get: "/v1/marketing/documents/{id}"
+        };
+  }
+  rpc UpdateDocument(UpdateDocumentRequest) returns (UpdateDocumentResponse) {
+    option (google.api.http) = {
+            put: "/v1/marketing/documents/{id}"
+            body: "*"
+        };
+  }
+  rpc DeleteDocument(DeleteDocumentRequest) returns (DeleteDocumentResponse) {
+    option (google.api.http) = {
+            delete: "/v1/marketing/documents/{id}"
+        };
+  }
+  rpc ListDocuments(ListDocumentsRequest) returns (ListDocumentsResponse) {
+    option (google.api.http) = {
+            get: "/v1/marketing/documents"
+        };
+  }
+
+  // Labels
+  rpc CreateLabel(CreateLabelRequest) returns (CreateLabelResponse) {
+    option (google.api.http) = {
+            post: "/v1/marketing/labels"
+            body: "*"
+        };
+  }
+  rpc ListLabels(ListLabelsRequest) returns (ListLabelsResponse) {
+    option (google.api.http) = {
+            get: "/v1/marketing/labels"
+        };
+  }
+  rpc DeleteLabel(DeleteLabelRequest) returns (DeleteLabelResponse) {
+    option (google.api.http) = {
+            delete: "/v1/marketing/labels/{id}"
+        };
+  }
+}
+
+// Models
+message Label {
+  string id = 1;
+  string name = 2;
+  string color = 3;
+  string slug = 4;
+}
+
+message Document {
+  string id = 1;
+  string title = 2;
+  string slug = 3;
+  string type = 4;        // e.g. "text", "draw_board"
+  string content_json = 5; // JSON string representing document content
+  repeated Label labels = 6;
+  google.protobuf.Timestamp created_at = 7;
+  google.protobuf.Timestamp updated_at = 8;
+}
+
+// Request / Response Messages
+
+message CreateDocumentRequest {
+  string title = 1;
+  string slug = 2;
+  string type = 3;
+  string content_json = 4;
+  repeated string label_ids = 5;
+}
+
+message CreateDocumentResponse {
+  Document document = 1;
+}
+
+message GetDocumentRequest {
+  oneof query {
+    string id = 1;
+    string slug = 2;
+  }
+}
+
+message GetDocumentResponse {
+  Document document = 1;
+}
+
+message UpdateDocumentRequest {
+  string id = 1;
+  string title = 2;
+  string slug = 3;
+  string content_json = 4;
+  repeated string label_ids = 5;
+}
+
+message UpdateDocumentResponse {
+  Document document = 1;
+}
+
+message DeleteDocumentRequest {
+  string id = 1;
+}
+
+message DeleteDocumentResponse {
+  bool success = 1;
+}
+
+message ListDocumentsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+  string filter_label_slug = 3;
+  string filter_type = 4;
+}
+
+message ListDocumentsResponse {
+  repeated Document documents = 1;
+  int32 total_count = 2;
+}
+
+message CreateLabelRequest {
+  string name = 1;
+  string color = 2;
+  string slug = 3;
+}
+
+message CreateLabelResponse {
+  Label label = 1;
+}
+
+message ListLabelsRequest {}
+
+message ListLabelsResponse {
+  repeated Label labels = 1;
+}
+
+message DeleteLabelRequest {
+  string id = 1;
+}
+
+message DeleteLabelResponse {
+  bool success = 1;
+}
